@@ -20,25 +20,28 @@ object Delete {
             StructField("Date de Souscription", TimestampType)
           )
         )
-    val list_id_client = args.toList
-    val id_client_string = list_id_client.head
-    val id_client_int = id_client_string.toInt
+//    val list_id_client = args.toList
+//    val id_client_string = list_id_client.head
+//    val id_client_int = id_client_string.toInt
+      val id_client_int = 1
 
-//    //pour la récupération des csv
-//    val dataFrame: DataFrame = sparkSession.read
-//      .schema(schema)
-//      .option("header", value = true)
-//      .csv("data")
-//    dataFrame.show()
-//    dataFrame.printSchema()
-//
-//    val dataset_filtrer = dataFrame.where("identifiantClient ="+id_client_int)
-
-
+    //pour la récupération des csv
+    val dataFrame: DataFrame = sparkSession.read
+      .schema(schema)
+      .option("header", value = true)
+      .csv("csv")
+    dataFrame.show()
+    dataFrame.printSchema()
     import sparkSession.implicits._
+    val d = dataFrame.filter("identifiantClient < 10").as[Client]
     val dataset = sparkSession.read.parquet("data").as[Client]
+    dataset.show()
+    print("dataframe =")
+    d.show()
+    print("dataset puis ")
+    dataset.union(d)
     dataset.filter("identifiantClient != " + id_client_int)
-
+    dataset.show()
 
 
   }
