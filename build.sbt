@@ -2,7 +2,7 @@ name := "heb-customer-subscription"
 
 version := "0.1"
 
-scalaVersion := "2.11.11"
+scalaVersion := "2.11.12"
 
 idePackagePrefix := Some("fr.episen.dataprocesing")
 

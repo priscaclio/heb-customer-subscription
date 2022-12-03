@@ -110,9 +110,7 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <additionalparam>${javadoc.opts}</additionalparam>
-                </configuration>
+
             </plugin>
 
             <plugin>
