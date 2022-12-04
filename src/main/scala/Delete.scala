@@ -1,6 +1,6 @@
 package fr.episen.dataprocesing
 
-import fr.episen.dataprocesing.models.Client
+import models.Client
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType, TimestampType}
 
@@ -8,6 +8,7 @@ import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructT
 
 object Delete {
   def main(args: Array[String]): Unit = {
+    println("début on crée la sparkSession")
 
     val sparkSession = SparkSession.builder().master("local").getOrCreate()
     // le type DateTime posait problème à cause de l'absence de DateTimeType
@@ -20,6 +21,7 @@ object Delete {
             StructField("Date de Souscription", TimestampType)
           )
         )
+    println("SparkSession crée")
 //    val list_id_client = args.toList
 //    val id_client_string = list_id_client.head
 //    val id_client_int = id_client_string.toInt
@@ -32,13 +34,14 @@ object Delete {
       .csv("csv")
     dataFrame.show()
     dataFrame.printSchema()
+
     import sparkSession.implicits._
     val d = dataFrame.filter("identifiantClient < 10").as[Client]
     val dataset = sparkSession.read.parquet("data").as[Client]
     dataset.show()
-    print("dataframe =")
+    println("dataset d =")
     d.show()
-    print("dataset puis ")
+    println("dataset puis ")
     dataset.union(d)
     dataset.filter("identifiantClient != " + id_client_int)
     dataset.show()
