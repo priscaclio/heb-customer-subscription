@@ -81,6 +81,7 @@ object Delete {
 
         import org.apache.spark.sql.functions._
 
+        //TODO try with file in hdfs
         val sparkSession = SparkSession.builder().master("local").getOrCreate()
 
         val dataframe: DataFrame = sparkSession.read.option("header",true).csv(config.inputpath)
