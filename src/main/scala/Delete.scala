@@ -2,7 +2,7 @@ package fr.episen.dataprocesing
 
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 import scopt.OParser
-//import org.zalando.spark.jsonschema.SchemaConverter
+import org.zalando.spark.jsonschema.SchemaConverter
 
 import scala.io.Source
 
@@ -91,6 +91,15 @@ object Delete {
         dataframe.printSchema()
 
         //TODO mapper data with json file config
+        //Dataframe2
+        println("dataframe2 test avec schema json file")
+        val fileContents = Source.fromFile("config/schema2.json").getLines.mkString
+        val schema = SchemaConverter.convertContent(fileContents)
+        val dataframe2: DataFrame = sparkSession.read.option("header",true).schema(schema).csv(config.inputpath)
+        //print data
+        dataframe2.show()
+        //print schema of csv file
+        dataframe2.printSchema()
 
       //Vérif id customer exist and id customer is unique
         val selectID = dataframe.filter(col("IdentifiantClient")===config.id).count()
