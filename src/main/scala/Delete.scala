@@ -1,9 +1,12 @@
 package fr.episen.dataprocesing
 
-import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
+import com.google.common.hash.Hashing
+import org.apache.spark.sql.types.{LongType, StructField, StructType}
+import org.apache.spark.sql.{DataFrame, Row, SaveMode, SparkSession}
 import scopt.OParser
 import org.zalando.spark.jsonschema.SchemaConverter
 
+import java.nio.charset.StandardCharsets
 import scala.io.Source
 
 object Delete {
@@ -65,6 +68,9 @@ object Delete {
 
   }
 
+  def hashage( str: String): String ={
+    Hashing.md5().hashString(str, StandardCharsets.UTF_8).toString
+  }
 
   def main(args: Array[String]): Unit = {
 
@@ -102,7 +108,7 @@ object Delete {
         dataframe2.printSchema()
 
       //Vérif id customer exist and id customer is unique
-        val selectID = dataframe.filter(col("IdentifiantClient")===config.id).count()
+        val selectID = dataframe2.filter(col("IdentifiantClient")===config.id).count()
 
         //if ID customer doesn't exist
         if(selectID == 0){
@@ -120,18 +126,41 @@ object Delete {
           if(config.service == "delete"){
             println("Service delete start")
 
-            dataframe.filter(dataframe("IdentifiantClient")!==config.id).show(false)
-            val df = dataframe.filter(dataframe("IdentifiantClient")!==config.id).toDF()
-            df.write.option("header",true).csv(config.outputpath);
-
-            //TODO replace csv files in inputpath by csv files in outputpath
+            val df = dataframe2.filter(dataframe2("IdentifiantClient")!==config.id)
+            df.show(false)
+            //if the inputpath = outputpath that will delete data in inputpath and write can't be done
+            df.write.option("header",true).mode(SaveMode.Overwrite).csv(config.outputpath)
+            //TODO résoudre le pb de overwrite le csv de départ
 
           }
           //Service to hash customer data in a csv file
           if(config.service == "hasher"){
             println("Service hasher start")
 
-            //TODO service
+            //TODO to improve
+            import sparkSession.implicits._
+
+            val d = dataframe2.filter(dataframe2("IdentifiantClient")!==config.id)
+              .map(client => (client.getLong(0),client.getString(1),
+                client.getString(2),client.getString(3),client.getString(4)))
+
+            val d2 = dataframe2.filter(dataframe2("IdentifiantClient")===config.id)
+              .map(client => (client.getLong(0),hashage(client.getString(1)),
+                hashage(client.getString(2)),hashage(client.getString(3)),client.getString(4)))
+
+            /*
+            println("d2")
+            d2.toDF("IdentifiantClient","Nom","Prenom","Adresse","DateDeSouscription").show(false)
+
+            print("d")
+            d.show(false)
+            */
+
+            val unionData = d2.union(d)
+            println("joinedData")
+            unionData.toDF("IdentifiantClient","Nom","Prenom","Adresse","DateDeSouscription").show(false)
+
+            unionData.toDF("IdentifiantClient","Nom","Prenom","Adresse","DateDeSouscription").write.option("header",true).mode(SaveMode.Overwrite).csv(config.outputpath)
           }
         }
 
@@ -177,6 +206,15 @@ object Delete {
     //dataframe.filter(dataframe("IdentifiantClient")!==4).write.format("csv").save("/data/data2.csv")
     //dataframe.show()
 
+
+
+  val structure = StructType(
+              StructField("IdentifiantClient", LongType,
+              StructField("Nom", LongType,
+              StructField("Prenom", LongType,
+              StructField("Adresse", LongType,
+              StructField("DateDeSouscription", LongType
+            )
  */
   }
 }
