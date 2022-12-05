@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "testSchema",
+  "title": "Schema for customer subscription csv file",
+  "type": "object",
+  "properties": {
+    "IdentifiantClient": {
+      "$id": "#root/items/IdentifiantClient",
+      "title": "IdentifiantClient",
+      "type": "integer",
+      "examples": [
+        5
+      ],
+      "default": 0
+    },
+    "Nom": {
+      "$id": "#root/items/Nom",
+      "title": "Nom",
+      "type": "string",
+      "default": "",
+      "examples": [
+        "tet"
+      ]
+    },
+    "Prenom": {
+      "$id": "#root/items/Prenom",
+      "title": "Prenom",
+      "type": "string",
+      "default": "",
+      "examples": [
+        "Prisca"
+      ]
+    },
+    "Adresse": {
+      "$id": "#root/items/Adresse",
+      "title": "Adresse",
+      "type": "string",
+      "default": "",
+      "examples": [
+        "test"
+      ]
+    },
+    "DateDeSouscription": {
+      "$id": "#root/items/DateDeSouscription",
+      "title": "DateDeSouscription",
+      "type": "string", "format": "date",
+      "default": "",
+      "examples": [
+        "12/12/2022"
+      ]
+    }
+  },
+  "required": [
+    "IdentifiantClient",
+    "Nom",
+    "Prenom",
+    "Adresse",
+    "DateDeSouscription"
+  ]
+
+}

@@ -1,0 +1,25 @@
+{
+  "columns": [
+    {
+      "name": "IdentifiantClient",
+      "type": "LongType"
+    },
+    {
+      "name": "Nom",
+      "type": "StringType"
+    },
+    {
+      "name": "Prenom",
+      "type": "StringType"
+    },
+    {
+      "name": "Adresse",
+      "type": "StringType"
+    },
+    {
+      "name": "DateDeSouscription",
+      "type": "StringType"
+    }
+
+  ]
+}
