@@ -1,25 +1,23 @@
 package fr.episen.dataprocesing
 
 import com.google.common.hash.Hashing
-import org.apache.spark.sql.types.{LongType, StructField, StructType}
-import org.apache.spark.sql.{DataFrame, Row, SaveMode, SparkSession}
-import scopt.OParser
+import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 import org.zalando.spark.jsonschema.SchemaConverter
+import scopt.OParser
 
 import java.nio.charset.StandardCharsets
 import scala.io.Source
 
-object Delete {
+object Service {
 
   //Scopt pour définir les arguments pour le service
+
   case class Config(
-     //delete: Boolean = false,
-     //hasher: Boolean = false,
      service: String = "",
      id: Long = -1,
      inputpath: String = "",
      outputpath: String = ""
-  )
+   )
 
   val builder = OParser.builder[Config]
   val argParser = {
@@ -27,13 +25,6 @@ object Delete {
     OParser.sequence(
       programName("heb-customer-subscription"),
       head("heb-customer-subscription", "1.0"),
-      /*opt[Boolean]('d', "delete")
-        //.required()
-        .action((d, c) => c.copy(delete = d))
-        .text("required boolean"),
-      opt[Boolean]('h', "hasher")
-        .action((h, c) => c.copy(hasher = h))
-        .text("required boolean"),*/
       opt[String]('s', "service")
         .action((h, c) => c.copy(service = h))
         .required()
@@ -56,28 +47,19 @@ object Delete {
       opt[String]('o', "outputpath")
         .action((o, c) => c.copy(outputpath = o))
         .required()
-        .text("required string path to put the new csv file")//,
-      /*checkConfig(c => {
-        if (c.inputpath < c.outputpath) {
-          success
-        } else {
-          failure("just cause")
-        }
-      })*/
+        .text("required string path to put the new csv file")
     )
-
   }
 
   def hashage( str: String): String ={
     Hashing.md5().hashString(str, StandardCharsets.UTF_8).toString
   }
-
   def main(args: Array[String]): Unit = {
 
     OParser.parse(argParser, args, Config()) match {
       case Some(config) =>
         println(OParser.usage(argParser))
-      // do stuff with config
+        // do stuff with config
         println("res service args "+config.service)
         println("res args "+config.id)
         println("res args "+config.inputpath)
@@ -96,7 +78,7 @@ object Delete {
         //print schema of csv file
         dataframe.printSchema()
 
-        //TODO mapper data with json file config
+        //mapper data with json file config
         //Dataframe2
         println("dataframe2 test avec schema json file")
         val fileContents = Source.fromFile("config/schema2.json").getLines.mkString
@@ -107,7 +89,7 @@ object Delete {
         //print schema of csv file
         dataframe2.printSchema()
 
-      //Vérif id customer exist and id customer is unique
+        //Vérif id customer exist and id customer is unique
         val selectID = dataframe2.filter(col("IdentifiantClient")===config.id).count()
 
         //if ID customer doesn't exist
@@ -150,18 +132,12 @@ object Delete {
               .map(client => (client.getLong(0),hashage(client.getString(1)),
                 hashage(client.getString(2)),hashage(client.getString(3)),client.getString(4)))
 
-            /*
-            println("d2")
-            d2.toDF("IdentifiantClient","Nom","Prenom","Adresse","DateDeSouscription").show(false)
-
-            print("d")
-            d.show(false)
-            */
-
+            // combine the 2 datasets
             val unionData = ds2.union(ds1)
             println("joinedData")
             unionData.toDF("IdentifiantClient","Nom","Prenom","Adresse","DateDeSouscription").show(false)
 
+            //write csv file data hasher for the given ID
             unionData
               .toDF("IdentifiantClient","Nom","Prenom","Adresse","DateDeSouscription")
               .write.option("header",true)
@@ -174,54 +150,9 @@ object Delete {
 
 
       case _ =>
-        //?
+      //?
 
     }
-/*
-    import org.apache.spark.sql.functions._
-
-    val sparkSession = SparkSession.builder().master("local").getOrCreate()
-
-    //val fileContents = Source.fromFile("data/schemaconfig.json").getLines.mkString
-    //val schema = SchemaConverter.convertContent(fileContents)
-
-    //val schema = SchemaConverter.convert("schemaconfig.json")
-
-    println(args.length)
-    println(args(0) + " "+ args(1))
-
-    //path -> C:\Users\Prisca\Documents\data
-    val dataframe: DataFrame = sparkSession.read.option("header",true).csv(args(0))
-
-    dataframe.show()
-    dataframe.printSchema()
-
-    //test 1
-    //dataframe.createOrReplaceTempView("tab")
-    //val res = sparkSession.sql("select * from tab where IdentifiantClient=4")
-    //res.show()
-
-    //test 2
-    dataframe.filter(dataframe("IdentifiantClient")!==args(1)).show(false)
-    val df = dataframe.filter(dataframe("IdentifiantClient")!==1).toDF()
-    //df.write.option("header",true).csv("C:/Users/Prisca/Documents/data/test3");
-
-
-    //dataframe.write.format("csv").save("/tmp/spark_output/datacsv")
-    //dataframe.write.mode(SaveMode.Overwrite).csv("data/data1.csv")
-    //dataframe.filter(dataframe("IdentifiantClient")!==4).write.mode(SaveMode.Overwrite).csv("data/data1.csv")
-    //dataframe.filter(dataframe("IdentifiantClient")!==4).write.format("csv").save("/data/data2.csv")
-    //dataframe.show()
-
-
-
-  val structure = StructType(
-              StructField("IdentifiantClient", LongType,
-              StructField("Nom", LongType,
-              StructField("Prenom", LongType,
-              StructField("Adresse", LongType,
-              StructField("DateDeSouscription", LongType
-            )
- */
   }
+
 }
