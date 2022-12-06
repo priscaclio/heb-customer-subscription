@@ -44,7 +44,7 @@ Dans le fichier built.sbt on a ajouté une dépendance :
 libraryDependencies += "com.github.scopt" %% "scopt" % "4.0.1"
 ```
 
-Et dans notre scala class object ```Config``` on a écrit le code 
+Et dans notre scala class object ```Config``` (dans le dossier ```scoptconfig``` dans ```src```) on a écrit le code 
 pour définir nos arguments. On en a définit 4 :
 
 ```scala
@@ -218,7 +218,7 @@ Dans le sbt on a rajouté la dépendance suivante :
 libraryDependencies += "org.zalando" %% "spark-json-schema" % "0.6.1"
 ```
 
-Le fichier de configuration json :
+Le fichier de configuration json (le fichier ```schema2.json``` dans le dossier ```config``` :
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -291,7 +291,7 @@ dataframe2.show()
 dataframe2.printSchema()
 ```
 
-Exemple lors de l'excécution : fichier avec des élements mal typé
+Exemple lors de l'excécution : fichier avec des élements qui ne sont pas correctement typés
 ```
 +-----------------+----+------+-------+------------------+
 |IdentifiantClient| Nom|Prenom|Adresse|DateDeSouscription|
@@ -336,7 +336,7 @@ n'est pas écrite :
 
 Et au dernier cours on a vu qu'on pouvait créer une case class ```JsonStruct``` et ```JsonObject```
 et dans le main créer une variable ```dataframeSchema = StructType(fiels.map(f => { //écrire tout les cas}))```, avec field
-notre fichier de configuration json de cette forme :
+notre fichier de configuration json de cette forme (le fichier ```schemaconfig.json``` dans le dossier ```config```):
 
 ```json
 {
@@ -411,7 +411,7 @@ if(config.service == "delete"){
 ```
 
 Exemple : \
-On a un fichier csv avec 4 lignes et on veut supprimer le client avec l'id 2. 
+On a un fichier csv avec 4 lignes et on veut supprimer le client avec l'id 2 (exemble de csv -> ```data1.csv``` dans le dossier ```data```). 
 ```
 +-----------------+----+------+-------+------------------+
 |IdentifiantClient| Nom|Prenom|Adresse|DateDeSouscription|
